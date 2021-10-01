@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using top_lista.Data;
 
 namespace top_lista.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20211001075930_Digits1")]
+    partial class Digits1
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -234,10 +236,10 @@ namespace top_lista.Data.Migrations
                     b.Property<bool>("IsApproved")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Miliseconds")
+                    b.Property<int?>("Miliseconds")
                         .HasColumnType("int");
 
-                    b.Property<int>("Minutes")
+                    b.Property<int?>("Minutes")
                         .HasColumnType("int");
 
                     b.Property<string>("Prezime")
@@ -245,8 +247,11 @@ namespace top_lista.Data.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("nvarchar(40)");
 
-                    b.Property<int>("Seconds")
+                    b.Property<int?>("Seconds")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("Vrijeme")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 

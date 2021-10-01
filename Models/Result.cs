@@ -12,9 +12,10 @@ namespace top_lista.Models
 
         [Required, MaxLength(40)]
         public string Prezime { get; set; }
-
-        [Required, DataType(DataType.Time)]
-        public DateTime Vrijeme { get; set; }
+        
+        public int Minutes { get; set; } = 0;
+        public int Seconds { get; set; } = 0;
+        public int Miliseconds { get; set; } = 0;
 
         public bool IsApproved { get; set; } = false;
     }

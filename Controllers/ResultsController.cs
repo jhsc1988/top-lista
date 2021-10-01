@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using top_lista.Data;
 using top_lista.Models;
 
@@ -26,7 +20,10 @@ namespace top_lista.Controllers
         // GET: Results
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Result.Where(e => e.IsApproved == true).OrderBy(a => a.Vrijeme).ToListAsync());
+            return View(await _context.Result.Where(e => e.IsApproved == true).OrderBy(a => a.Minutes)
+                .ThenBy(a => a.Seconds)
+                .ThenBy(a => a.Miliseconds)
+                .ToListAsync());
         }
 
         // GET: Results/Details/5
@@ -58,7 +55,7 @@ namespace top_lista.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Ime,Prezime,Vrijeme")] Result result)
+        public async Task<IActionResult> Create([Bind("Id,Ime,Prezime,Minutes,Seconds,Miliseconds")] Result result)
         {
             if (ModelState.IsValid)
             {
@@ -98,7 +95,7 @@ namespace top_lista.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Administrator")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Ime,Prezime,Vrijeme")] Result result)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Ime,Prezime,Minutes,Seconds,Miliseconds,IsApproved")] Result result)
         {
             if (id != result.Id)
             {
@@ -167,7 +164,7 @@ namespace top_lista.Controllers
         [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> NewIndex()
         {
-            return View("Index", await _context.Result.Where(e => e.IsApproved == false).OrderBy(a => a.Vrijeme).ToListAsync());
+            return View("Index", await _context.Result.Where(e => e.IsApproved == false).ToListAsync());
         }
 
         [Authorize(Roles = "Administrator")]

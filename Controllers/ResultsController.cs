@@ -24,10 +24,9 @@ namespace top_lista.Controllers
         }
 
         // GET: Results
-        [Authorize(Roles ="Administrator")]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Result.Where(e => e.IsApproved == true).OrderBy(a=> a.Vrijeme).ToListAsync());
+            return View(await _context.Result.Where(e => e.IsApproved == true).OrderBy(a => a.Vrijeme).ToListAsync());
         }
 
         // GET: Results/Details/5
@@ -64,6 +63,12 @@ namespace top_lista.Controllers
             if (ModelState.IsValid)
             {
                 _context.Add(result);
+
+                if (User.IsInRole("Administrator"))
+                {
+                    result.IsApproved = true;
+                }
+
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
@@ -71,6 +76,7 @@ namespace top_lista.Controllers
         }
 
         // GET: Results/Edit/5
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -91,6 +97,7 @@ namespace top_lista.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Ime,Prezime,Vrijeme")] Result result)
         {
             if (id != result.Id)
@@ -122,6 +129,7 @@ namespace top_lista.Controllers
         }
 
         // GET: Results/Delete/5
+        [Authorize(Roles = "Administrator")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -141,6 +149,7 @@ namespace top_lista.Controllers
 
         // POST: Results/Delete/5
         [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = "Administrator")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -155,7 +164,28 @@ namespace top_lista.Controllers
             return _context.Result.Any(e => e.Id == id);
         }
 
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> NewIndex()
+        {
+            return View("Index", await _context.Result.Where(e => e.IsApproved == false).OrderBy(a => a.Vrijeme).ToListAsync());
+        }
 
+        [Authorize(Roles = "Administrator")]
+        public async Task<IActionResult> Approve(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
+            var result = await _context.Result.FirstOrDefaultAsync(m => m.Id == id);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            result.IsApproved = true;
+            _context.SaveChanges();
+            return RedirectToAction("NewIndex");
+        }
     }
 }
